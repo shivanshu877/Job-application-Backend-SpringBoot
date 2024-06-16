@@ -57,7 +57,7 @@ Open each microservice project (job-service, company-service, review-service) in
   Access all services through Gateway at: [http://localhost:8084](http://localhost:8084)
 
 5. **Verify Services:**
-Confirm that all services are registered with Eureka by visiting [http://localhost:8761](http://localhost:8000).
+Confirm that all services are registered with Eureka by visiting [http://localhost:8000](http://localhost:8000).
 
 ## Usage
 
