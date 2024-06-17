@@ -27,6 +27,86 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+  config-server:
+    image: vashudev8777070/config-server
+    container_name: config-server
+    ports:
+      - 8080:8080
+    depends_on:
+      - servicereg
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  servicereg:
+    image: vashudev8777070/servicereg
+    container_name: servicereg
+    ports:
+      - "8761:8761"
+    depends_on:
+      - rabbitmq
+      - zipkin
+      - postgres
+      - pgadmin
+    networks:
+      - microservice-network
+      - postgres
+  companyms:
+    image: vashudev8777070/companyms
+    container_name: company
+    ports:
+      - 8081:8081
+    depends_on:
+      -  servicereg
+      -  config-server
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+  jobms:
+    image: vashudev8777070/jobms
+    container_name: job
+    ports:
+      - 8082:8082
+    depends_on:
+      - servicereg
+      - config-server
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+#  reviewms:
+#    image: vashudev8777070/reviewms
+#    container_name: review
+#    ports:
+#      - 8083:8083
+#    depends_on:
+#      - servicereg
+#      - config-server
+#    networks:
+#      - microservice-network
+#      - postgres
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+
+  gateway-ms:
+    image: vashudev8777070/gateway-ms
+    container_name: gateway-ms
+    ports:
+      - 8084:8084
+    depends_on:
+      - servicereg
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
@@ -34,12 +114,25 @@ services:
       - 9411:9411
     networks:
       - postgres
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - postgres
 
 networks:
+  microservice-network:
+    driver: bridge
   postgres:
     driver: bridge
 
 volumes:
   postgres:
   pgadmin:
+
+
+
 
